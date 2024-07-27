@@ -1,0 +1,70 @@
+'use client';
+
+import { UploadIcon } from "@/components/icons";
+import { useState, useCallback } from 'react';
+
+export default function FileUpload() {
+    const [isDragging, setIsDragging] = useState(false);
+
+    const handleDragEnter = useCallback((e: { preventDefault: () => void; stopPropagation: () => void; }) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    }, []);
+
+    const handleDragLeave = useCallback((e: { preventDefault: () => void; stopPropagation: () => void; }) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    }, []);
+
+    const handleDragOver = useCallback((e: { preventDefault: () => void; stopPropagation: () => void; }) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }, []);
+
+    const handleDrop = useCallback((e: { preventDefault: () => void; stopPropagation: () => void; dataTransfer: { files: any; }; }) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        const files = [...e.dataTransfer.files];
+        // Handle the dropped files here
+        console.log('Dropped files:', files);
+    }, []);
+
+    const handleClick = useCallback(() => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = true;
+        input.onchange = (e) => {
+            // @ts-ignore
+            const files = [...e.target.files];
+            // Handle the selected files here
+            console.log('Selected files:', files);
+        };
+        input.click();
+    }, []);
+
+    return (
+        <>
+            <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl font-bold">File Uploads</h1>
+            </div>
+            <div
+                className={`border rounded-lg p-6 flex items-center justify-center h-1/2 bg-muted ${isDragging ? 'border-primary' : ''}`}
+                onDragEnter={handleDragEnter}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={handleClick}
+            >
+                <div className="text-center space-y-2">
+                    <UploadIcon className="w-12 h-12 text-primary mx-auto" />
+                    <p className="text-lg font-medium">Drag and drop files to upload</p>
+                    <p className="text-muted-foreground">or click to select files from your device</p>
+                </div>
+            </div>
+        </>
+    )
+}
