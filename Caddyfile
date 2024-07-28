@@ -1,0 +1,5 @@
+:8080 {
+    reverse_proxy /auth/* localhost:8010
+    reverse_proxy /api/* localhost:8010
+    reverse_proxy /* localhost:3000
+}
