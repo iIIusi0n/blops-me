@@ -1,4 +1,5 @@
 import {FileExplorer} from "@/components/file-explorer";
+import {EmptyStorage} from "@/components/empty-storage";
 
 function getData() {
   const files = [
@@ -11,7 +12,5 @@ function getData() {
 }
 
 export default async function Page() {
-  const data = getData();
-
-  return <FileExplorer files={data} />;
+  return <EmptyStorage />;
 }

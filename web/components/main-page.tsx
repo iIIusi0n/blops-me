@@ -10,7 +10,7 @@ export function MainPage() {
           Automatic file organizer powered by AI.
         </p>
         <div className="mt-8">
-          <Link href="/storage">
+          <Link href="/auth/google/login">
             <Button size="default" className="w-[200px] h-12">
               <ChromeIcon className="mr-2 h-5 w-5" />
               Login with Google

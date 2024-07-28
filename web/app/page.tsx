@@ -1,5 +1,13 @@
 import {MainPage} from "@/components/main-page";
+import {redirect} from "next/navigation";
+import {getAuthorized} from "@/components/api/auth";
 
 export default async function Page() {
-  return <MainPage />;
+    const authorized = await getAuthorized();
+
+    if (authorized) {
+        redirect("/s")
+    }
+
+    return <MainPage/>;
 }

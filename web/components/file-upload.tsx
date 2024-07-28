@@ -52,7 +52,7 @@ export default function FileUpload() {
                 <h1 className="text-2xl font-bold">File Uploads</h1>
             </div>
             <div
-                className={`border rounded-lg p-6 flex items-center justify-center h-1/2 bg-muted ${isDragging ? 'border-primary' : ''}`}
+                className={`border rounded-lg p-6 flex items-center justify-center h-[100%] bg-muted ${isDragging ? 'border-primary' : ''}`}
                 onDragEnter={handleDragEnter}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}

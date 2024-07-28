@@ -21,7 +21,7 @@ export function FileExplorer({files}) {
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold">My Files</h1>
                 <div className="flex items-center gap-4">
-                    <Link href="/storage/u">
+                    <Link href="/s/u">
                         <Button variant="outline">
                             <UploadIcon className="mr-2 h-4 w-4"/>
                             Upload
