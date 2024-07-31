@@ -1,10 +1,12 @@
+import {API_URL} from "@/components/api/config";
+
 export interface Storage {
     id: number;
     name: string;
 }
 
 export async function createStorage(storageName: string) {
-    await fetch("http://localhost:8080/api/storage", {
+    await fetch(API_URL + "/api/storage", {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -15,7 +17,7 @@ export async function createStorage(storageName: string) {
 }
 
 export async function deleteStorage(storageID: number) {
-    await fetch(`http://localhost:8080/api/storage`, {
+    await fetch(API_URL + "/api/storage", {
         method: "DELETE",
         credentials: 'include',
         headers: {
@@ -25,7 +27,7 @@ export async function deleteStorage(storageID: number) {
 }
 
 export async function getStorages(): Promise<{ storages: Storage[] }> {
-    const resp = await fetch("http://localhost:8080/api/storage", {
+    const resp = await fetch(API_URL + "/api/storage", {
         credentials: 'include',
     });
     if (!resp.ok) {

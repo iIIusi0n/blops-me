@@ -8,7 +8,7 @@ export async function getAuthorized() {
         return false;
     }
 
-    const resp = await fetch("http://localhost:8010/auth/verify", {
+    const resp = await fetch("http://127.0.0.1:8010/auth/verify", {
         credentials: 'include',
         headers: {
             Cookie: `token=${token}`

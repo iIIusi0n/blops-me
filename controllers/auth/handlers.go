@@ -1,11 +1,12 @@
 package auth
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
 func LoginHandler(c *gin.Context) {
@@ -52,4 +53,9 @@ func VerifyHandler(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"authorized": true})
 		return
 	}
+}
+
+func LogoutHandler(c *gin.Context) {
+	c.SetCookie("token", "", -1, "/", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Logged out"})
 }

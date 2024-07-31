@@ -43,6 +43,12 @@ export function Sidebar() {
         }
     };
 
+    const logout = async () => {
+        await fetch('/auth/logout');
+
+        router.push('/');
+    }
+
     const handleDeleteStorage = async (id: number) => {
         const originalStorageName = storages.find(storage => storage.id === id)?.name || '';
 
@@ -107,7 +113,7 @@ export function Sidebar() {
                     </div>
                 </nav>
                 <div className="mt-auto flex items-center gap-2">
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" onClick={logout}>
                         <LogOutIcon className="h-4 w-4 text-muted-foreground"/>
                         <span className="sr-only">Logout</span>
                     </Button>
