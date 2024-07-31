@@ -1,13 +1,14 @@
 package storage
 
 import (
-	"blops-me/data"
 	"database/sql"
-	"github.com/gin-gonic/gin"
 	"log"
 	"sort"
 	"strconv"
 	"strings"
+
+	"blops-me/data"
+	"github.com/gin-gonic/gin"
 )
 
 func ListStorageHandler(c *gin.Context) {

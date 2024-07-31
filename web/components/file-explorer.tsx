@@ -13,15 +13,16 @@ import {
     DownloadIcon,
     FileTypeIcon
 } from "@/components/icons";
+import {decodeString} from "@/components/utils/encoding";
 
 // @ts-ignore
-export function FileExplorer({files}) {
+export function FileExplorer({files, storageName}) {
     return (
         <>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold">My Files</h1>
+                <h1 className="text-2xl font-bold">Files in {decodeString(storageName)}</h1>
                 <div className="flex items-center gap-4">
-                    <Link href="/s/u">
+                    <Link href={`/s/${storageName}/u`}>
                         <Button variant="outline">
                             <UploadIcon className="mr-2 h-4 w-4"/>
                             Upload

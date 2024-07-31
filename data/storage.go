@@ -2,6 +2,8 @@ package data
 
 import (
 	"database/sql"
+
+	"blops-me/utils"
 )
 
 type Storage struct {
@@ -11,6 +13,8 @@ type Storage struct {
 }
 
 func AddNewStorage(db *sql.DB, storageName string, userID string) error {
+	storageName = utils.EncodeBase62(storageName)
+
 	exists := 0
 	err := db.QueryRow("SELECT EXISTS (SELECT 1 FROM storage WHERE storage_name = ? AND user_id = ?)", storageName, userID).Scan(&exists)
 	if err != nil {
@@ -43,6 +47,7 @@ func GetStorages(db *sql.DB, userID string) ([]Storage, error) {
 		if err != nil {
 			return nil, err
 		}
+		storage.Name = utils.DecodeBase62(storage.Name)
 		storages = append(storages, storage)
 	}
 

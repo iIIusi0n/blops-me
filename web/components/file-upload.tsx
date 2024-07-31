@@ -1,29 +1,43 @@
 'use client';
 
-import { UploadIcon } from "@/components/icons";
-import { useState, useCallback } from 'react';
+import {UploadIcon} from "@/components/icons";
+import {useCallback, useState} from 'react';
+import {decodeString} from "@/components/utils/encoding";
 
-export default function FileUpload() {
+export default function FileUpload({storageName}: { storageName: string }) {
     const [isDragging, setIsDragging] = useState(false);
 
-    const handleDragEnter = useCallback((e: { preventDefault: () => void; stopPropagation: () => void; }) => {
+    const handleDragEnter = useCallback((e: {
+        preventDefault: () => void;
+        stopPropagation: () => void;
+    }) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(true);
     }, []);
 
-    const handleDragLeave = useCallback((e: { preventDefault: () => void; stopPropagation: () => void; }) => {
+    const handleDragLeave = useCallback((e: {
+        preventDefault: () => void;
+        stopPropagation: () => void;
+    }) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(false);
     }, []);
 
-    const handleDragOver = useCallback((e: { preventDefault: () => void; stopPropagation: () => void; }) => {
+    const handleDragOver = useCallback((e: {
+        preventDefault: () => void;
+        stopPropagation: () => void;
+    }) => {
         e.preventDefault();
         e.stopPropagation();
     }, []);
 
-    const handleDrop = useCallback((e: { preventDefault: () => void; stopPropagation: () => void; dataTransfer: { files: any; }; }) => {
+    const handleDrop = useCallback((e: {
+        preventDefault: () => void;
+        stopPropagation: () => void;
+        dataTransfer: { files: any; };
+    }) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(false);
@@ -49,7 +63,8 @@ export default function FileUpload() {
     return (
         <>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold">File Uploads</h1>
+                <h1 className="text-2xl font-bold">Upload files
+                    to {decodeString(storageName)}</h1>
             </div>
             <div
                 className={`border rounded-lg p-6 flex items-center justify-center h-[100%] bg-muted ${isDragging ? 'border-primary' : ''}`}
@@ -60,9 +75,11 @@ export default function FileUpload() {
                 onClick={handleClick}
             >
                 <div className="text-center space-y-2">
-                    <UploadIcon className="w-12 h-12 text-primary mx-auto" />
-                    <p className="text-lg font-medium">Drag and drop files to upload</p>
-                    <p className="text-muted-foreground">or click to select files from your device</p>
+                    <UploadIcon className="w-12 h-12 text-primary mx-auto"/>
+                    <p className="text-lg font-medium">Drag and drop files to
+                        upload</p>
+                    <p className="text-muted-foreground">or click to select
+                        files from your device</p>
                 </div>
             </div>
         </>
