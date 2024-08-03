@@ -15,8 +15,24 @@ import {
 } from "@/components/icons";
 import {decodeString} from "@/components/utils/encoding";
 
+function isDir(file: { type: string; }) {
+    return file.type === 'DIR';
+}
+
 // @ts-ignore
 export function FileExplorer({files, storageName}) {
+    const compareFolderPriority = (a: { name: string, type: string; }, b: { name: string, type: string; }) => {
+        if (isDir(a) && !isDir(b)) {
+            return -1;
+        }
+
+        if (!isDir(a) && isDir(b)) {
+            return 1;
+        }
+
+        return a.name.localeCompare(b.name);
+    }
+
     return (
         <>
             <div className="flex items-center justify-between mb-6">
@@ -42,12 +58,12 @@ export function FileExplorer({files, storageName}) {
                     </TableHeader>
                     <TableBody>
                         {[...files]
-                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .sort((a, b) => compareFolderPriority(a, b))
                             .map((file) => (
                                 <TableRow key={file.name}>
                                     <TableCell>
                                         <Link href="#" className="flex items-center gap-2" prefetch={false}>
-                                            <FileTypeIcon className="h-5 w-5 text-muted-foreground"/>
+                                            {file.type === 'DIR' ? <FolderArchiveIcon className="h-5 w-5 text-muted-foreground"/> : <FileTypeIcon type={file.type} className="h-5 w-5 text-muted-foreground"/>}
                                             <span>{file.name}</span>
                                         </Link>
                                     </TableCell>

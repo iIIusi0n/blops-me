@@ -3,9 +3,10 @@ import {Sidebar} from "@/components/sidebar";
 
 function getData() {
     const files = [
-        {name: 'file1', type: 'JPEG', modifiedAt: '2021-01-01', size: "21 MB"},
-        {name: 'file2', type: 'PPTX', modifiedAt: '2021-01-01', size: "21 MB"},
-        {name: 'file3', type: 'MP3', modifiedAt: '2021-01-01', size: "21 MB"},
+        {name: 'file1', type: 'PPTX', modifiedAt: '2021-01-01', size: "21 MB"},
+        {name: 'a', type: 'MP3', modifiedAt: '2021-01-01', size: "21 MB"},
+        {name: 'folder2', type: 'DIR', modifiedAt: '2021-01-01', size: "21 MB"},
+        {name: 'folder1', type: 'DIR', modifiedAt: '2021-01-01', size: "21 MB"},
     ]
 
     return files;

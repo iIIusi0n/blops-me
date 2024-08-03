@@ -59,7 +59,6 @@ export async function Sidebar({ encodedStorageName } : { encodedStorageName: str
         }
 
         revalidatePath(redirectPath);
-        redirect(redirectPath);
     }
 
     const handleLogout = async () => {

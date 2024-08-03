@@ -54,8 +54,17 @@ export default function FileUpload({storageName}: { storageName: string }) {
         input.onchange = (e) => {
             // @ts-ignore
             const files = [...e.target.files];
-            // Handle the selected files here
-            console.log('Selected files:', files);
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size exceeds 5MB limit. Only files up to 5MB will be uploaded.');
+                    continue;
+                }
+
+                console.log(file.name);
+            }
         };
         input.click();
     }, []);
