@@ -54,8 +54,3 @@ func VerifyHandler(c *gin.Context) {
 		return
 	}
 }
-
-func LogoutHandler(c *gin.Context) {
-	c.SetCookie("token", "", -1, "/", "", false, true)
-	c.JSON(http.StatusOK, gin.H{"message": "Logged out"})
-}

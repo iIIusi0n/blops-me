@@ -1,4 +1,5 @@
 import {FileExplorer} from "@/components/file-explorer";
+import {Sidebar} from "@/components/sidebar";
 
 function getData() {
     const files = [
@@ -11,5 +12,12 @@ function getData() {
 }
 
 export default function Page({params}: { params: { storage: string } }) {
-    return <FileExplorer files={getData()} storageName={params.storage}/>;
+    return (
+        <>
+            <Sidebar encodedStorageName={params.storage} />
+            <div className="flex flex-1 flex-col px-8 py-10">
+                <FileExplorer files={getData()} storageName={params.storage}/>
+            </div>
+        </>
+    );
 }

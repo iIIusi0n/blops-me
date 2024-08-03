@@ -52,7 +52,7 @@ func CreateStorageHandler(c *gin.Context) {
 		return
 	}
 
-	resp.StorageName = strings.ToLower(resp.StorageName)
+	resp.StorageName = strings.ToTitle(resp.StorageName)
 	db := c.MustGet("db").(*sql.DB)
 	err = data.AddNewStorage(db, resp.StorageName, userID)
 	if err != nil {

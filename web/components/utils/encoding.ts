@@ -1,30 +1,24 @@
-import bigInt from "big-integer";
-
-const BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-const BASE = bigInt(62);
-
 export function encodeString(input: string): string {
-    let bytes = Buffer.from(input, 'utf-8');
-    // @ts-ignore
-    let num = bigInt.fromArray([...bytes], 256);
-    let encoded = '';
+    const buffer = Buffer.from(input);
 
-    while (num.greater(0)) {
-        let { quotient, remainder } = num.divmod(BASE);
-        encoded = BASE62_ALPHABET[remainder.toJSNumber()] + encoded;
-        num = quotient;
-    }
+    let base64 = buffer.toString('base64');
 
-    return encoded;
+    return base64
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
 }
 
-export function decodeString(encoded: string): string {
-    let num = bigInt(0);
-
-    for (let char of encoded) {
-        num = num.multiply(BASE).add(BASE62_ALPHABET.indexOf(char));
+export function decodeString(input: string): string {
+    input = input.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = input.length % 4;
+    if (pad) {
+        if (pad === 1) {
+            throw new Error('InvalidLengthError: Input base64url string is the wrong length to determine padding');
+        }
+        input += new Array(5-pad).join('=');
     }
 
-    let bytes = num.toArray(256).value;
-    return Buffer.from(bytes).toString('utf-8');
+    const buffer = Buffer.from(input, 'base64');
+    return buffer.toString('utf-8');
 }

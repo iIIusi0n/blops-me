@@ -17,7 +17,6 @@ func SetupRouter(r *gin.Engine) *gin.Engine {
 		}
 
 		auth.GET("/verify", cAuth.VerifyHandler)
-		auth.GET("/logout", cAuth.LogoutHandler)
 	}
 
 	api := r.Group("/api")

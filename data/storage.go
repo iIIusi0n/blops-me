@@ -13,7 +13,7 @@ type Storage struct {
 }
 
 func AddNewStorage(db *sql.DB, storageName string, userID string) error {
-	storageName = utils.EncodeBase62(storageName)
+	storageName = utils.EncodeBase(storageName)
 
 	exists := 0
 	err := db.QueryRow("SELECT EXISTS (SELECT 1 FROM storage WHERE storage_name = ? AND user_id = ?)", storageName, userID).Scan(&exists)
@@ -47,7 +47,7 @@ func GetStorages(db *sql.DB, userID string) ([]Storage, error) {
 		if err != nil {
 			return nil, err
 		}
-		storage.Name = utils.DecodeBase62(storage.Name)
+		storage.Name = utils.DecodeBase(storage.Name)
 		storages = append(storages, storage)
 	}
 
