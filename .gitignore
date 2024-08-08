@@ -104,3 +104,4 @@ go.work
 
 config/*.go
 
+.env.local
