@@ -11,14 +11,14 @@ import (
 
 type DBConfig struct {
 	Host     string
-	Port     int
+	Port     string
 	User     string
 	Password string
 	DBName   string
 }
 
 func GetDatabaseConn(config DBConfig) (*sql.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		config.User, config.Password, config.Host, config.Port, config.DBName)
 
 	db, err := sql.Open("mysql", dsn)

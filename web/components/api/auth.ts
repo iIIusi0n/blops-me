@@ -1,7 +1,6 @@
 "use server";
 
-import {cookies} from "next/headers";
-import {INTERNAL_API_URL} from "@/components/api/config";
+import {cookies} from "next/headers"
 
 export async function getAuthorized() {
     const token = cookies().get("token")?.value;
@@ -9,7 +8,7 @@ export async function getAuthorized() {
         return false;
     }
 
-    const resp = await fetch(`${INTERNAL_API_URL}/auth/verify`, {
+    const resp = await fetch(`${process.env.APP_API_URL}/auth/verify`, {
         credentials: 'include',
         headers: {
             Cookie: `token=${token}`

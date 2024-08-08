@@ -1,5 +1,4 @@
 import {cookies} from "next/headers";
-import {INTERNAL_API_URL} from "@/components/api/config";
 
 export interface Storage {
     id: number;
@@ -8,7 +7,7 @@ export interface Storage {
 
 export async function createStorage(storageName: string) {
     const token = cookies().get('token')?.value;
-    await fetch( `${INTERNAL_API_URL}/api/storage`, {
+    await fetch( `${process.env.APP_API_URL}/api/storage`, {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -21,7 +20,7 @@ export async function createStorage(storageName: string) {
 
 export async function deleteStorage(storageID: number) {
     const token = cookies().get('token')?.value;
-    await fetch( `${INTERNAL_API_URL}/api/storage`, {
+    await fetch( `${process.env.APP_API_URL}/api/storage`, {
         method: "DELETE",
         credentials: 'include',
         headers: {
@@ -33,7 +32,7 @@ export async function deleteStorage(storageID: number) {
 
 export async function getStorages(): Promise<{ storages: Storage[] }> {
     const token = cookies().get('token')?.value;
-    const resp = await fetch( `${INTERNAL_API_URL}/api/storage`, {
+    const resp = await fetch( `${process.env.APP_API_URL}/api/storage`, {
         credentials: 'include',
         headers: {
             'Cookie': `token=${token}`

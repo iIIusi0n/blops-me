@@ -102,6 +102,4 @@ go.work
 
 *.log
 
-config/*.go
-
-.env.local
+web/.env.local

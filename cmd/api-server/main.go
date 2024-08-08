@@ -1,13 +1,8 @@
 package main
 
 import (
-	"blops-me/data"
-	"blops-me/middlewares"
-	"blops-me/server"
 	"database/sql"
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"io"
 	"log"
 	"os"
@@ -15,6 +10,11 @@ import (
 	"time"
 
 	c "blops-me/config"
+	"blops-me/data"
+	"blops-me/middlewares"
+	"blops-me/server"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func SetLogOutput(logFilePath string) (*os.File, error) {
@@ -39,7 +39,9 @@ func SetLogOutput(logFilePath string) (*os.File, error) {
 }
 
 func main() {
-	logFile, err := SetLogOutput(c.LOG_FILE)
+	gin.SetMode(c.ReleaseMode)
+
+	logFile, err := SetLogOutput(c.LogFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -52,11 +54,11 @@ func main() {
 	log.Println("Log file created")
 
 	dbConn, err := data.GetDatabaseConn(data.DBConfig{
-		Host:     c.DB_HOST,
-		Port:     c.DB_PORT,
-		User:     c.DB_USER,
-		Password: c.DB_PASSWORD,
-		DBName:   c.DB_NAME,
+		Host:     c.DbHost,
+		Port:     c.DbPort,
+		User:     c.DbUser,
+		Password: c.DbPassword,
+		DBName:   c.DbName,
 	})
 	if err != nil {
 		log.Fatalln(err)
@@ -83,5 +85,5 @@ func main() {
 	server.SetupRouter(r)
 	log.Println("Router setup complete")
 
-	log.Fatalln(r.Run(fmt.Sprintf("%s:%d", c.SERVER_HOST, c.SERVER_PORT)))
+	log.Fatalln(r.Run(fmt.Sprintf("%s:%s", c.ServerHost, c.ServerPort)))
 }
