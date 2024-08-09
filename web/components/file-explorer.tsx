@@ -20,7 +20,7 @@ function isDir(file: { type: string; }) {
 }
 
 // @ts-ignore
-export function FileExplorer({files, storageName}) {
+export function FileExplorer({files, storageName, path}) {
     const compareFolderPriority = (a: { name: string, type: string; }, b: { name: string, type: string; }) => {
         if (isDir(a) && !isDir(b)) {
             return -1;
@@ -33,10 +33,16 @@ export function FileExplorer({files, storageName}) {
         return a.name.localeCompare(b.name);
     }
 
+    const decodedStorageName = decodeString(storageName);
+    const decodedPath = decodeString(path);
+
     return (
         <>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold">Files in {decodeString(storageName)}</h1>
+                <div>
+                    <h1 className="text-2xl font-bold">Files in {decodedStorageName}</h1>
+                    <p className="text-muted-foreground text-sm py-1">{decodedPath}</p>
+                </div>
                 <div className="flex items-center gap-4">
                     <Link href={`/s/${storageName}/u`}>
                         <Button variant="outline">

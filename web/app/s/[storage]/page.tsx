@@ -12,12 +12,12 @@ function getData() {
     return files;
 }
 
-export default function Page({params}: { params: { storage: string } }) {
+export default function Page({params, searchParams}: { params: { storage: string }, searchParams: { [key: string]: string | string[] | undefined } }) {
     return (
         <>
             <Sidebar encodedStorageName={params.storage} />
             <div className="flex flex-1 flex-col px-8 py-10">
-                <FileExplorer files={getData()} storageName={params.storage}/>
+                <FileExplorer files={getData()} storageName={params.storage} path={searchParams.path}/>
             </div>
         </>
     );
