@@ -140,3 +140,70 @@ func DeleteFileHandler(c *gin.Context) {
 
 	c.JSON(200, gin.H{"message": "File deleted"})
 }
+
+func GetFileHandler(c *gin.Context) {
+	fileID := c.Param("id")
+	parsedFileID, err := strconv.Atoi(fileID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid file ID"})
+		return
+	}
+
+	db := c.MustGet("db").(*sql.DB)
+	file, err := data.GetFile(db, parsedFileID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	storageOwner, err := data.GetStorageOwner(db, file.StorageID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	userID := c.GetString("user")
+	if storageOwner != userID {
+		c.JSON(403, gin.H{"error": "Forbidden"})
+		return
+	}
+
+	c.FileAttachment(file.Path, file.Name)
+}
+
+func GetPathHandler(c *gin.Context) {
+	storageID := c.Param("id")
+	parsedStorageID, err := strconv.Atoi(storageID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid storage ID"})
+		return
+	}
+
+	userID := c.GetString("user")
+	db := c.MustGet("db").(*sql.DB)
+	storageOwner, err := data.GetStorageOwner(db, parsedStorageID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	if storageOwner != userID {
+		c.JSON(403, gin.H{"error": "Forbidden"})
+		return
+	}
+
+	pathID := c.Param("pathID")
+	parsedPathID, err := strconv.Atoi(pathID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid path ID"})
+		return
+	}
+
+	path, err := GetFullPath(db, parsedPathID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	c.JSON(200, path)
+}

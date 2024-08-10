@@ -106,8 +106,7 @@ export default function FileUpload({storageName}: { storageName: string }) {
     return (
         <>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold">Upload files
-                    to {decodeString(storageName)}</h1>
+                <h1 className="text-2xl font-bold">Upload files to {decodeString(storageName)}</h1>
             </div>
             <div
                 className={`border rounded-lg p-6 flex items-center justify-center h-[100%] bg-muted ${isDragging ? 'border-primary' : ''}`}

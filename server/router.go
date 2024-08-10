@@ -29,8 +29,11 @@ func SetupRouter(r *gin.Engine) *gin.Engine {
 		api.DELETE("/storage", cStorage.DeleteStorageHandler)
 
 		api.GET("/storage/:id/file", cFile.ListFilesHandler)
+		api.GET("/storage/:id/path/:pathID", cFile.GetPathHandler)
 		api.POST("/storage/:id/file", cFile.UploadFilesHandler)
 		api.DELETE("/storage/:id/file", cFile.DeleteFileHandler)
+
+		api.GET("/file/:id", cFile.GetFileHandler)
 	}
 
 	return r

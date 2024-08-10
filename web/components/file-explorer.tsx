@@ -14,7 +14,7 @@ import {
     FileTypeIcon
 } from "@/components/icons";
 import {decodeString} from "@/components/utils/encoding";
-import {getFiles, resolveStorageID} from "@/components/api/file";
+import {getFiles, getPath, resolveStorageID} from "@/components/api/file";
 
 function isDir(file: { type: string; }) {
     return file.type === 'DIR';
@@ -44,15 +44,16 @@ export async function FileExplorer({storageName, path}) {
     const decodedStorageName = decodeString(storageName);
 
     const storageID = await resolveStorageID(decodedStorageName);
-    const data = await getFiles(storageID);
+    const data = await getFiles(storageID, path ? path : 0);
     const files = data || [];
+    const pathData = path ? await getPath(storageID, path) : '/';
 
     return (
         <>
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold">Files in {decodedStorageName}</h1>
-                    <p className="text-muted-foreground text-sm py-1">{path}</p>
+                    <p className="text-muted-foreground text-sm py-1">{pathData}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <Link href={`/s/${storageName}/u`}>
@@ -79,7 +80,7 @@ export async function FileExplorer({storageName, path}) {
                             .map((file) => (
                                 <TableRow key={file.name}>
                                     <TableCell>
-                                        <Link href="#" className="flex items-center gap-2" prefetch={false}>
+                                        <Link href={file.type !== 'DIR' ? `/api/file/${file.id}` : `/s/${storageName}?path=${file.id}`} className="flex items-center gap-2" prefetch={false}>
                                             {file.type === 'DIR' ? <FolderArchiveIcon className="h-5 w-5 text-muted-foreground"/> : <FileTypeIcon type={file.type} className="h-5 w-5 text-muted-foreground"/>}
                                             <span>{file.name}</span>
                                         </Link>
