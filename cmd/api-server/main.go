@@ -71,6 +71,8 @@ func main() {
 	}(dbConn)
 
 	r := gin.Default()
+	r.MaxMultipartMemory = 8 << 20 // 8MB
+
 	r.Use(middlewares.AddDatabaseConnToContext(dbConn))
 	log.Println("Database connection added to context")
 
@@ -83,7 +85,6 @@ func main() {
 	r.Use(middlewares.AuthMiddleware())
 
 	server.SetupRouter(r)
-	log.Println("Router setup complete")
 
 	log.Fatalln(r.Run(fmt.Sprintf("%s:%s", c.ServerHost, c.ServerPort)))
 }

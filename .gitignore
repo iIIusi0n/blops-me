@@ -103,3 +103,5 @@ go.work
 *.log
 
 web/.env.local
+
+uploads/
