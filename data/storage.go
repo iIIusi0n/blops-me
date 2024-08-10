@@ -54,6 +54,15 @@ func GetStorages(db *sql.DB, userID string) ([]Storage, error) {
 	return storages, nil
 }
 
+func GetStorageOwner(db *sql.DB, storageID int) (string, error) {
+	var userID string
+	err := db.QueryRow("SELECT user_id FROM storage WHERE id = ?", storageID).Scan(&userID)
+	if err != nil {
+		return "", err
+	}
+	return userID, nil
+}
+
 func DeleteStorage(db *sql.DB, storageID int, userID string) error {
 	_, err := db.Exec("DELETE FROM storage WHERE id = ? AND user_id = ?", storageID, userID)
 	return err

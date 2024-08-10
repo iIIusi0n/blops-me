@@ -2,6 +2,7 @@ package server
 
 import (
 	cAuth "blops-me/controllers/auth"
+	cFile "blops-me/controllers/file"
 	cStorage "blops-me/controllers/storage"
 	"blops-me/middlewares"
 	"github.com/gin-gonic/gin"
@@ -27,9 +28,9 @@ func SetupRouter(r *gin.Engine) *gin.Engine {
 		api.POST("/storage", cStorage.CreateStorageHandler)
 		api.DELETE("/storage", cStorage.DeleteStorageHandler)
 
-		api.GET("/storage/:id")
-		api.POST("/storage/:id")
-		api.DELETE("/storage/:id")
+		api.GET("/storage/:id/file", cFile.ListFilesHandler)
+		api.POST("/storage/:id/file", cFile.UploadFilesHandler)
+		api.DELETE("/storage/:id/file", cFile.DeleteFileHandler)
 	}
 
 	return r
