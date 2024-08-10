@@ -44,3 +44,18 @@ export async function getPath(storageId: number, pathId: number): Promise<any> {
 
     return resp.json();
 }
+
+export async function getParentID(storageId: number, pathId: number): Promise<number> {
+    const token = cookies().get('token')?.value;
+    const resp = await fetch(`${process.env.APP_API_URL}/api/storage/${storageId}/parent/${pathId}`, {
+        credentials: 'include',
+        headers: {
+            'Cookie': `token=${token}`
+        }
+    });
+    if (!resp.ok) {
+        return -1;
+    }
+
+    return resp.json();
+}

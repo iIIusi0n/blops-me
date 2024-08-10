@@ -14,7 +14,7 @@ import {
     FileTypeIcon
 } from "@/components/icons";
 import {decodeString} from "@/components/utils/encoding";
-import {getFiles, getPath, resolveStorageID} from "@/components/api/file";
+import {getFiles, getParentID, getPath, resolveStorageID} from "@/components/api/file";
 
 function isDir(file: { type: string; }) {
     return file.type === 'DIR';
@@ -47,6 +47,7 @@ export async function FileExplorer({storageName, path}) {
     const data = await getFiles(storageID, path ? path : 0);
     const files = data || [];
     const pathData = path ? await getPath(storageID, path) : '/';
+    const parentID = path ? await getParentID(storageID, path) : 0;
 
     return (
         <>
@@ -75,6 +76,23 @@ export async function FileExplorer({storageName, path}) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
+                        {path ? (
+                            <TableRow key="..">
+                                <TableCell>
+                                    <Link href={`/s/${storageName}${parentID !== 0 ? `?path=${parentID}` : ''}`} className="flex items-center gap-2" prefetch={false}>
+                                        <FolderArchiveIcon className="h-5 w-5 text-muted-foreground"/>
+                                        <span>..</span>
+                                    </Link>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="outline" className="px-2 py-1">
+                                        DIR
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>-</TableCell>
+                                <TableCell className="text-right">-</TableCell>
+                            </TableRow>
+                        ) : null}
                         {[...files]
                             .sort((a, b) => compareFolderPriority(a, b))
                             .map((file) => (

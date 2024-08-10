@@ -27,6 +27,20 @@ func GetFile(db *sql.DB, fileID int) (File, error) {
 	return file, nil
 }
 
+func GetParentID(db *sql.DB, fileID int) (int, error) {
+	var parentID interface{}
+	err := db.QueryRow("SELECT parent_id FROM file WHERE id = ?", fileID).Scan(&parentID)
+	if err != nil {
+		return 0, err
+	}
+
+	if parentID == nil {
+		return 0, nil
+	} else {
+		return parentID.(int), nil
+	}
+}
+
 func GetFilesByType(db *sql.DB, storageID int, fileType string) ([]File, error) {
 	rows, err := db.Query("SELECT id, name, type, last_modified, size, path, storage_id FROM file WHERE storage_id = ? AND type = ?", storageID, fileType)
 	if err != nil {

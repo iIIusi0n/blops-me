@@ -207,3 +207,40 @@ func GetPathHandler(c *gin.Context) {
 
 	c.JSON(200, path)
 }
+
+func GetParentHandler(c *gin.Context) {
+	storageID := c.Param("id")
+	parsedStorageID, err := strconv.Atoi(storageID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid storage ID"})
+		return
+	}
+
+	userID := c.GetString("user")
+	db := c.MustGet("db").(*sql.DB)
+	storageOwner, err := data.GetStorageOwner(db, parsedStorageID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	if storageOwner != userID {
+		c.JSON(403, gin.H{"error": "Forbidden"})
+		return
+	}
+
+	pathID := c.Param("pathID")
+	parsedPathID, err := strconv.Atoi(pathID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid path ID"})
+		return
+	}
+
+	id, err := data.GetParentID(db, parsedPathID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	c.JSON(200, id)
+}
