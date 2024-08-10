@@ -3,9 +3,11 @@
 import {UploadIcon} from "@/components/icons";
 import {useCallback, useState} from 'react';
 import {decodeString} from "@/components/utils/encoding";
+import {useRouter} from "next/navigation";
 
 export default function FileUpload({storageName}: { storageName: string }) {
     const [isDragging, setIsDragging] = useState(false);
+    const router = useRouter();
 
     const handleDragEnter = useCallback((e: {
         preventDefault: () => void;
@@ -33,6 +35,43 @@ export default function FileUpload({storageName}: { storageName: string }) {
         e.stopPropagation();
     }, []);
 
+    const findStorageIdByName = async (storageName: string) => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/storage`);
+        if (!res.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await res.json();
+        const storages = data.storages;
+        const storage = storages.find((storage: any) => storage.name === decodeString(storageName));
+        return storage.id;
+    }
+
+    const uploadFiles = async (files: any) => {
+        const formData = new FormData();
+        files.forEach((file: any) => {
+            formData.append('files', file);
+        });
+
+        try {
+            const storageId = await findStorageIdByName(storageName);
+
+            const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/storage/${storageId}/file`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            alert('Files uploading started. It may take some time to complete.');
+        } catch (error) {
+            console.error('An error occurred:', error);
+            alert('An error occurred while uploading the files');
+        }
+    };
+
     const handleDrop = useCallback((e: {
         preventDefault: () => void;
         stopPropagation: () => void;
@@ -43,9 +82,11 @@ export default function FileUpload({storageName}: { storageName: string }) {
         setIsDragging(false);
 
         const files = [...e.dataTransfer.files];
-        // Handle the dropped files here
-        console.log('Dropped files:', files);
-    }, []);
+
+        uploadFiles(files).finally(() => {
+            router.push(`/s/${storageName}`);
+        });
+    }, [router]);
 
     const handleClick = useCallback(() => {
         const input = document.createElement('input');
@@ -55,19 +96,12 @@ export default function FileUpload({storageName}: { storageName: string }) {
             // @ts-ignore
             const files = [...e.target.files];
 
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('File size exceeds 5MB limit. Only files up to 5MB will be uploaded.');
-                    continue;
-                }
-
-                console.log(file.name);
-            }
+            uploadFiles(files).finally(() => {
+                router.push(`/s/${storageName}`);
+            });
         };
         input.click();
-    }, []);
+    }, [router]);
 
     return (
         <>

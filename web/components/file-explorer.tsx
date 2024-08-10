@@ -14,13 +14,14 @@ import {
     FileTypeIcon
 } from "@/components/icons";
 import {decodeString} from "@/components/utils/encoding";
+import {getFiles, resolveStorageID} from "@/components/api/file";
 
 function isDir(file: { type: string; }) {
     return file.type === 'DIR';
 }
 
 // @ts-ignore
-export function FileExplorer({files, storageName, path}) {
+export async function FileExplorer({storageName, path}) {
     const compareFolderPriority = (a: { name: string, type: string; }, b: { name: string, type: string; }) => {
         if (isDir(a) && !isDir(b)) {
             return -1;
@@ -33,15 +34,25 @@ export function FileExplorer({files, storageName, path}) {
         return a.name.localeCompare(b.name);
     }
 
+    const bytesToSize = (bytes: number) => {
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes == 0) return '0 Byte';
+        const i = parseInt(String(Math.floor(Math.log(bytes) / Math.log(1024))));
+        return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
+    }
+
     const decodedStorageName = decodeString(storageName);
-    const decodedPath = decodeString(path);
+
+    const storageID = await resolveStorageID(decodedStorageName);
+    const data = await getFiles(storageID);
+    const files = data || [];
 
     return (
         <>
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold">Files in {decodedStorageName}</h1>
-                    <p className="text-muted-foreground text-sm py-1">{decodedPath}</p>
+                    <p className="text-muted-foreground text-sm py-1">{path}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <Link href={`/s/${storageName}/u`}>
@@ -78,8 +89,8 @@ export function FileExplorer({files, storageName, path}) {
                                             {file.type}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>{file.modifiedAt}</TableCell>
-                                    <TableCell className="text-right">{file.size}</TableCell>
+                                    <TableCell>{file.last_modified.split('T')[0]}</TableCell>
+                                    <TableCell className="text-right">{file.type == 'DIR' ? '-' : bytesToSize(file.size)}</TableCell>
                                 </TableRow>
                             ))}
                     </TableBody>
