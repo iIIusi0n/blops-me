@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"io"
 	"log"
@@ -11,6 +10,7 @@ import (
 
 	c "blops-me/config"
 	"blops-me/data"
+	"blops-me/internal/gemini"
 	"blops-me/middlewares"
 	"blops-me/server"
 	"github.com/gin-contrib/cors"
@@ -45,12 +45,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer func(logFile *os.File) {
-		err := logFile.Close()
-		if err != nil {
-
-		}
-	}(logFile)
+	defer logFile.Close()
 	log.Println("Log file created")
 
 	dbConn, err := data.GetDatabaseConn(data.DBConfig{
@@ -63,18 +58,19 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer func(dbConn *sql.DB) {
-		err := dbConn.Close()
-		if err != nil {
-			log.Fatalln(err)
-		}
-	}(dbConn)
+	defer dbConn.Close()
+
+	geminiClient := gemini.NewClientQueue(c.GeminiApiKey)
+	defer geminiClient.Close()
 
 	r := gin.Default()
 	r.MaxMultipartMemory = 8 << 20 // 8MB
 
 	r.Use(middlewares.AddDatabaseConnToContext(dbConn))
 	log.Println("Database connection added to context")
+
+	r.Use(middlewares.AddGeminiClientQueueToContext(geminiClient))
+	log.Println("Gemini client queue added to context")
 
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"http://localhost:8080"}
