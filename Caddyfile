@@ -1,5 +1,5 @@
 localhost {
-    reverse_proxy /auth/* localhost:8010
-    reverse_proxy /api/* localhost:8010
-    reverse_proxy /* localhost:3000
+    reverse_proxy /auth/* 127.0.0.1:8010
+    reverse_proxy /api/* 127.0.0.1:8010
+    reverse_proxy /* 127.0.0.1:3000
 }
