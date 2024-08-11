@@ -18,7 +18,9 @@ create table file
     storage_id    int          not null,
     parent_id     int          null,
     constraint file_file_id_fk
-        foreign key (parent_id) references file (id),
+        foreign key (parent_id) references file (id)
+            on delete cascade,
     constraint file_storage_id_fk
         foreign key (storage_id) references storage (id)
+            on delete cascade
 );
