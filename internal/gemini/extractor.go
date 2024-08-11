@@ -15,7 +15,7 @@ type FileContent struct {
 func extractContent(path, name string) (string, error) {
 	scriptPath := "scripts/extract.py"
 
-	cmd := exec.Command("python", scriptPath, path)
+	cmd := exec.Command("/opt/venv/bin/python", scriptPath, path)
 
 	var out bytes.Buffer
 	cmd.Stdout = &out
