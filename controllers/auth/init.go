@@ -1,18 +1,13 @@
 package auth
 
 import (
-	"crypto/rand"
 	"log"
+
+	c "blops-me/config"
 )
 
 func init() {
-	secret := make([]byte, 32)
-	_, err := rand.Read(secret)
-	if err != nil {
-		log.Fatalln("Failed to generate JWT secret: ", err)
-	}
+	jwtSecret = []byte(c.SessionSecret)
 
-	jwtSecret = secret
-
-	log.Println("JWT secret generated")
+	log.Printf("JWT secret set to: %v\n", string(jwtSecret))
 }
