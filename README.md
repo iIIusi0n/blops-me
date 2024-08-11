@@ -26,22 +26,19 @@ git clone https://github.com/iIIusi0n/blops-me.git
 cd blops-me
 ```
 
-### 3. Setup MySQL database
-Create a new database with 'schemes.sql' and user with privileges.
-
-```sql
-CREATE DATABASE my_new_database;
-
-CREATE USER 'new_user'@'localhost' IDENTIFIED BY 'user_password';
-GRANT ALL PRIVILEGES ON my_new_database.* TO 'new_user'@'localhost';
-
-FLUSH PRIVILEGES;
-
-SOURCE assets/schemes.sql
-```
-
 ### 3. Edit configurations
 There is an .env file in web/, but it is recommended to make .env.local and use that.
+
+Please fill following variables and do not touch other if you want to install using docker.
+```bash
+- APP_DOMAIN
+
+- OAUTH_CLIENT_ID
+- OAUTH_CLIENT_SECRET
+- SESSION_SECRET
+
+- GEMINI_API_KEY
+```
 
 Then edit host in caddyfile.
 
@@ -54,12 +51,6 @@ cp web/.env web/.env.local
 vim web/.env.local
 ```
 
-Set MYSQL_* variables, change APP_URL to url for access. (It should match the caddyfile)
-
-Set OAUTH_CLIENT_ID and OAUTH_CLIENT_SECRET with credentials, also change GEMINI_API_KEY.
-
-You will also need to configure SESSION_SECRET with a 32-byte random string.
-
 Example Caddyfile:
 ```
 example.com {
@@ -69,32 +60,13 @@ example.com {
 }
 ```
 
-### 4. Run API server
+### 4. Build and run
 ```bash
-go build blops-me/cmd/api-server
-./api-server
+# Build docker image
+docker build -t blops-me .
 
-# It will run as a foreground job, so you can use the screen like this.
-screen -S api ./api-server
-```
-
-### 5. Run Node.js frontend
-```bash
-cd web
-npm install
-npm run build
-npm run start
-
-# It will run as a foreground job, so you can use the screen like this.
-screen -S web npm run start
-
-cd ..
-```
-
-### 6. Run Caddy proxy
-```bash
-# This will run as a background job. If you want to monitor the status, you can use run instead of start.
-caddy start --config Caddyfile
+# Run docker container
+docker run -d -p 80:80 -p 443:443 blops-me
 ```
 
 ## TODO
