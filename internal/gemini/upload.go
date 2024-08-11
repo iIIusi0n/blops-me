@@ -1,28 +1,40 @@
 package gemini
 
 import (
-	"context"
-	"log"
-	"os"
-
-	"github.com/google/generative-ai-go/genai"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"os/exec"
 )
 
-func uploadToGemini(ctx context.Context, client *genai.Client, path, name string) (string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
+type FileContent struct {
+	Filename string `json:"filename"`
+	Content  string `json:"content"`
+}
 
-	options := genai.UploadFileOptions{
-		DisplayName: name,
-	}
-	fileData, err := client.UploadFile(ctx, "", file, &options)
+func extractContent(path, name string) (string, error) {
+	scriptPath := "scripts/extract.py"
+
+	cmd := exec.Command("python", scriptPath, path)
+
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+
+	err := cmd.Run()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error executing script: %v, output: %s", err, out.String())
 	}
 
-	log.Printf("Uploaded file %s as: %s\n", fileData.DisplayName, fileData.URI)
-	return fileData.URI, nil
+	fileContent := FileContent{
+		Filename: name,
+		Content:  out.String(),
+	}
+
+	jsonOutput, err := json.Marshal(fileContent)
+	if err != nil {
+		return "", fmt.Errorf("error marshalling JSON: %v", err)
+	}
+
+	return string(jsonOutput), nil
 }

@@ -56,13 +56,6 @@ func NewClientQueue(apiKey string) *ClientQueue {
 		log.Fatalf("Error creating client: %v\n", err)
 	}
 
-	safety := []*genai.SafetySetting{
-		{
-			Category:  genai.HarmCategoryDangerousContent,
-			Threshold: genai.HarmBlockNone,
-		},
-	}
-
 	model := client.GenerativeModel("gemini-1.5-flash")
 
 	model.SetTemperature(0.5)
@@ -70,7 +63,12 @@ func NewClientQueue(apiKey string) *ClientQueue {
 	model.SetTopP(0.95)
 	model.SetMaxOutputTokens(16 * 1024)
 	model.ResponseMIMEType = "application/json"
-	model.SafetySettings = safety
+	model.SafetySettings = []*genai.SafetySetting{
+		{
+			Category:  genai.HarmCategoryDangerousContent,
+			Threshold: genai.HarmBlockNone,
+		},
+	}
 
 	return &ClientQueue{
 		ctx:        ctx,
@@ -82,28 +80,16 @@ func NewClientQueue(apiKey string) *ClientQueue {
 }
 
 func (cq *ClientQueue) MakeRequest(fileRequests []FileRequest, storageName string, existingFolders []string) {
-	fileUris := make([]string, 0)
+	parts := make([]genai.Part, 0)
+	generatedPrompt := generatePrompt(storageName, existingFolders)
+	parts = append(parts, genai.Text(generatedPrompt))
 	for _, fileRequest := range fileRequests {
-		uri, err := uploadToGemini(cq.ctx, cq.client, fileRequest.Path, fileRequest.Name)
+		payload, err := extractContent(fileRequest.Path, fileRequest.Name)
 		if err != nil {
-			log.Printf("Error uploading file: %v\n", err)
+			log.Printf("Error extracting content: %v\n", err)
 			continue
 		}
-
-		fileUris = append(fileUris, uri)
-	}
-
-	fileParts := make([]genai.Part, 0)
-	for _, uri := range fileUris {
-		fileParts = append(fileParts, genai.FileData{URI: uri})
-	}
-
-	session := cq.model.StartChat()
-	session.History = []*genai.Content{
-		{
-			Role:  "user",
-			Parts: fileParts,
-		},
+		parts = append(parts, genai.Text(payload))
 	}
 
 	ctx := context.Background()
@@ -116,10 +102,17 @@ func (cq *ClientQueue) MakeRequest(fileRequests []FileRequest, storageName strin
 		return
 	}
 
-	generatedPrompt := generatePrompt(storageName, existingFolders)
-	resp, err := session.SendMessage(cq.ctx, genai.Text(generatedPrompt))
+	tokResp, err := cq.model.CountTokens(cq.ctx, parts...)
 	if err != nil {
-		log.Printf("Error sending message: %v\n", err)
+		log.Printf("Error counting tokens: %v\n", err)
+		return
+	}
+
+	log.Printf("Token count: %v\n", tokResp.TotalTokens)
+
+	resp, err := cq.model.GenerateContent(cq.ctx, parts...)
+	if err != nil {
+		log.Printf("Error generating content: %v\n", err)
 		return
 	}
 
