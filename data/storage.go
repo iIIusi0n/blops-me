@@ -33,12 +33,7 @@ func GetStorages(db *sql.DB, userID string) ([]Storage, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			return
-		}
-	}(rows)
+	defer rows.Close()
 
 	var storages []Storage
 	for rows.Next() {
@@ -54,13 +49,14 @@ func GetStorages(db *sql.DB, userID string) ([]Storage, error) {
 	return storages, nil
 }
 
-func GetStorageOwner(db *sql.DB, storageID int) (string, error) {
-	var userID string
-	err := db.QueryRow("SELECT user_id FROM storage WHERE id = ?", storageID).Scan(&userID)
+func GetStorage(db *sql.DB, storageID int, userID string) (Storage, error) {
+	var storage Storage
+	err := db.QueryRow("SELECT id, storage_name FROM storage WHERE id = ? AND user_id = ?", storageID, userID).Scan(&storage.ID, &storage.Name)
 	if err != nil {
-		return "", err
+		return storage, err
 	}
-	return userID, nil
+	storage.Name = utils.DecodeBase(storage.Name)
+	return storage, nil
 }
 
 func DeleteStorage(db *sql.DB, storageID int, userID string) error {

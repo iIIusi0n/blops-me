@@ -46,12 +46,7 @@ func GetFilesByType(db *sql.DB, storageID int, fileType string) ([]File, error) 
 	if err != nil {
 		return nil, err
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			return
-		}
-	}(rows)
+	defer rows.Close()
 
 	var files []File
 	for rows.Next() {
@@ -71,12 +66,7 @@ func GetFilesInStorage(db *sql.DB, storageID int) ([]File, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			return
-		}
-	}(rows)
+	defer rows.Close()
 
 	var files []File
 	for rows.Next() {
@@ -96,12 +86,7 @@ func GetFilesInFolder(db *sql.DB, folderID int) ([]File, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			return
-		}
-	}(rows)
+	defer rows.Close()
 
 	var files []File
 	for rows.Next() {

@@ -1,11 +1,13 @@
 package file
 
 import (
-	"blops-me/data"
 	"database/sql"
-	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
+
+	"blops-me/data"
+	"blops-me/internal/gemini"
+	"github.com/gin-gonic/gin"
 )
 
 func ListFilesHandler(c *gin.Context) {
@@ -18,14 +20,9 @@ func ListFilesHandler(c *gin.Context) {
 
 	userID := c.GetString("user")
 	db := c.MustGet("db").(*sql.DB)
-	storageOwner, err := data.GetStorageOwner(db, parsedStorageID)
+	_, err = data.GetStorage(db, parsedStorageID, userID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Internal server error"})
-		return
-	}
-
-	if storageOwner != userID {
-		c.JSON(403, gin.H{"error": "Forbidden"})
 		return
 	}
 
@@ -67,15 +64,23 @@ func UploadFilesHandler(c *gin.Context) {
 
 	userID := c.GetString("user")
 	db := c.MustGet("db").(*sql.DB)
-	storageOwner, err := data.GetStorageOwner(db, parsedStorageID)
+	storage, err := data.GetStorage(db, parsedStorageID, userID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Internal server error"})
 		return
 	}
 
-	if storageOwner != userID {
-		c.JSON(403, gin.H{"error": "Forbidden"})
-		return
+	isStorage := false
+	var parsedPathID int
+	pathID := c.Query("path")
+	if pathID == "" {
+		isStorage = true
+	} else {
+		parsedPathID, err = strconv.Atoi(pathID)
+		if err != nil {
+			c.JSON(400, gin.H{"error": "Invalid path ID"})
+			return
+		}
 	}
 
 	form, err := c.MultipartForm()
@@ -84,17 +89,21 @@ func UploadFilesHandler(c *gin.Context) {
 		return
 	}
 
+	geminiClient := c.MustGet("geminiClient").(*gemini.ClientQueue)
+
 	files := form.File["files"]
+	fileRequests := make([]gemini.FileRequest, 0)
 	for _, file := range files {
 		filePath := newFileName()
 		err = c.SaveUploadedFile(file, filePath)
 		if err != nil {
-			c.JSON(500, gin.H{"error": "Internal server error"})
-			return
+			log.Printf("Error saving file: %v\n", err)
+			continue
 		}
 
-		go saveNewFile(db, file.Filename, parsedStorageID, file.Size, filePath)
+		fileRequests = append(fileRequests, gemini.NewFileRequest(file.Filename, file.Size, filePath, parsedStorageID, isStorage, parsedPathID))
 	}
+	go saveNewFiles(db, geminiClient, fileRequests, storage)
 
 	c.JSON(200, gin.H{"message": "Files uploaded"})
 }
@@ -109,14 +118,9 @@ func DeleteFileHandler(c *gin.Context) {
 
 	userID := c.GetString("user")
 	db := c.MustGet("db").(*sql.DB)
-	storageOwner, err := data.GetStorageOwner(db, parsedStorageID)
+	_, err = data.GetStorage(db, parsedStorageID, userID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Internal server error"})
-		return
-	}
-
-	if storageOwner != userID {
-		c.JSON(403, gin.H{"error": "Forbidden"})
 		return
 	}
 
@@ -156,15 +160,10 @@ func GetFileHandler(c *gin.Context) {
 		return
 	}
 
-	storageOwner, err := data.GetStorageOwner(db, file.StorageID)
+	userID := c.GetString("user")
+	_, err = data.GetStorage(db, file.StorageID, userID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Internal server error"})
-		return
-	}
-
-	userID := c.GetString("user")
-	if storageOwner != userID {
-		c.JSON(403, gin.H{"error": "Forbidden"})
 		return
 	}
 
@@ -181,14 +180,9 @@ func GetPathHandler(c *gin.Context) {
 
 	userID := c.GetString("user")
 	db := c.MustGet("db").(*sql.DB)
-	storageOwner, err := data.GetStorageOwner(db, parsedStorageID)
+	_, err = data.GetStorage(db, parsedStorageID, userID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Internal server error"})
-		return
-	}
-
-	if storageOwner != userID {
-		c.JSON(403, gin.H{"error": "Forbidden"})
 		return
 	}
 
@@ -218,14 +212,9 @@ func GetParentHandler(c *gin.Context) {
 
 	userID := c.GetString("user")
 	db := c.MustGet("db").(*sql.DB)
-	storageOwner, err := data.GetStorageOwner(db, parsedStorageID)
+	_, err = data.GetStorage(db, parsedStorageID, userID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Internal server error"})
-		return
-	}
-
-	if storageOwner != userID {
-		c.JSON(403, gin.H{"error": "Forbidden"})
 		return
 	}
 

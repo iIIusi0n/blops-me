@@ -3,9 +3,9 @@ package auth
 import (
 	"context"
 	"encoding/json"
-	"golang.org/x/oauth2"
 	"io"
-	"log"
+
+	"golang.org/x/oauth2"
 )
 
 type GoogleUser struct {
@@ -19,12 +19,7 @@ func getUserInfo(token *oauth2.Token) (*GoogleUser, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Println("Failed to close response body: ", err)
-		}
-	}(resp.Body)
+	defer resp.Body.Close()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {

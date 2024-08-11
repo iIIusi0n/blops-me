@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func init() {
@@ -26,4 +27,6 @@ func init() {
 	ClientId = os.Getenv("OAUTH_CLIENT_ID")
 	ClientSecret = os.Getenv("OAUTH_CLIENT_SECRET")
 	RedirectUri = os.Getenv("OAUTH_REDIRECT_URI")
+
+	GeminiApiKey = os.Getenv("GEMINI_API_KEY")
 }

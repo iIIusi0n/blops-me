@@ -1,11 +1,13 @@
 package file
 
 import (
-	"blops-me/data"
 	"database/sql"
 	"log"
 	"math/rand"
 	"os"
+
+	"blops-me/data"
+	"blops-me/internal/gemini"
 )
 
 func randomString(length int) string {
@@ -23,8 +25,12 @@ func newFileName() string {
 	return path + fileName
 }
 
-func saveNewFile(db *sql.DB, originalName string, storageID int, size int64, savedPath string) {
-	log.Printf("Saving file %s to database. Storage ID: %d, Size: %d, Path: %s", originalName, storageID, size, savedPath)
+func saveNewFiles(db *sql.DB, geminiClient *gemini.ClientQueue, files []gemini.FileRequest, storage data.Storage) {
+	if paths, err := GetFoldersFullPath(db, storage.ID); err == nil {
+		geminiClient.MakeRequest(files, storage.Name, paths)
+	} else {
+		log.Printf("Error getting folders full path: %v\n", err)
+	}
 }
 
 func deleteFile(db *sql.DB, fileID int) error {
