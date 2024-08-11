@@ -2,6 +2,7 @@ package gemini
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -18,6 +19,14 @@ type FileRequest struct {
 	StorageID int
 	IsStorage bool
 	PathID    int
+}
+
+type FileResponse struct {
+	Files []struct {
+		FullPath         string   `json:"full_path"`
+		NewFolders       []string `json:"new_folders"`
+		OriginalFilename string   `json:"original_filename"`
+	} `json:"files"`
 }
 
 func NewFileRequest(name string, size int64, path string, storageID int, isStorage bool, pathID int) FileRequest {
@@ -79,7 +88,7 @@ func NewClientQueue(apiKey string) *ClientQueue {
 	}
 }
 
-func (cq *ClientQueue) MakeRequest(fileRequests []FileRequest, storageName string, existingFolders []string) {
+func (cq *ClientQueue) MakeRequest(fileRequests []FileRequest, storageName string, existingFolders []string) (FileResponse, error) {
 	parts := make([]genai.Part, 0)
 	generatedPrompt := generatePrompt(storageName, existingFolders)
 	parts = append(parts, genai.Text(generatedPrompt))
@@ -95,30 +104,32 @@ func (cq *ClientQueue) MakeRequest(fileRequests []FileRequest, storageName strin
 	ctx := context.Background()
 	if err := cq.rpmLimiter.Wait(ctx); err != nil {
 		log.Printf("RPM limit exceeded: %v\n", err)
-		return
+		return FileResponse{}, err
 	}
 	if err := cq.rpdLimiter.Wait(ctx); err != nil {
 		log.Printf("RPD limit exceeded: %v\n", err)
-		return
+		return FileResponse{}, err
 	}
-
-	tokResp, err := cq.model.CountTokens(cq.ctx, parts...)
-	if err != nil {
-		log.Printf("Error counting tokens: %v\n", err)
-		return
-	}
-
-	log.Printf("Token count: %v\n", tokResp.TotalTokens)
 
 	resp, err := cq.model.GenerateContent(cq.ctx, parts...)
 	if err != nil {
 		log.Printf("Error generating content: %v\n", err)
-		return
+		return FileResponse{}, err
 	}
 
 	for _, part := range resp.Candidates[0].Content.Parts {
-		fmt.Printf("%v\n", part)
+		partString := fmt.Sprintf("%v", part)
+		var fileResponse FileResponse
+		err := json.Unmarshal([]byte(partString), &fileResponse)
+		if err != nil {
+			log.Printf("Error unmarshalling JSON: %v\n", err)
+			return FileResponse{}, err
+		}
+
+		return fileResponse, nil
 	}
+
+	return FileResponse{}, fmt.Errorf("no response from model")
 }
 
 func (cq *ClientQueue) Close() {

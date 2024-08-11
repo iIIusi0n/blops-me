@@ -13,9 +13,24 @@ type File struct {
 	ParentID     int    `json:"parent_id"`
 }
 
-func AddFile(db *sql.DB, file File) error {
-	_, err := db.Exec("INSERT INTO file (name, type, last_modified, size, path, storage_id, parent_id) VALUES (?, ?, ?, ?, ?, ?, ?)", file.Name, file.Type, file.LastModified, file.Size, file.Path, file.StorageID, file.ParentID)
-	return err
+func AddFile(db *sql.DB, file File, isThereParent bool) (int, error) {
+	var err error
+	if isThereParent {
+		_, err = db.Exec("INSERT INTO file (name, type, last_modified, size, path, storage_id, parent_id) VALUES (?, ?, ?, ?, ?, ?, ?)", file.Name, file.Type, file.LastModified, file.Size, file.Path, file.StorageID, file.ParentID)
+	} else {
+		_, err = db.Exec("INSERT INTO file (name, type, last_modified, size, path, storage_id) VALUES (?, ?, ?, ?, ?, ?)", file.Name, file.Type, file.LastModified, file.Size, file.Path, file.StorageID)
+	}
+	if err != nil {
+		return 0, err
+	}
+
+	var fileID int
+	err = db.QueryRow("SELECT id FROM file WHERE name = ? AND path = ? AND storage_id = ?", file.Name, file.Path, file.StorageID).Scan(&fileID)
+	if err != nil {
+		return 0, err
+	}
+
+	return fileID, nil
 }
 
 func GetFile(db *sql.DB, fileID int) (File, error) {
@@ -24,6 +39,13 @@ func GetFile(db *sql.DB, fileID int) (File, error) {
 	if err != nil {
 		return File{}, err
 	}
+
+	parentID, err := GetParentID(db, fileID)
+	if err != nil {
+		return File{}, err
+	}
+	file.ParentID = parentID
+
 	return file, nil
 }
 
@@ -37,7 +59,7 @@ func GetParentID(db *sql.DB, fileID int) (int, error) {
 	if parentID == nil {
 		return 0, nil
 	} else {
-		return parentID.(int), nil
+		return int(parentID.(int64)), nil
 	}
 }
 
