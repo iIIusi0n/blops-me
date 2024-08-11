@@ -9,11 +9,7 @@ As you use your computer every day, you'll end up with lots of files. But organi
 - Linux
 
 ### Dependencies
-- Golang 1.20+
-- Caddy : You can install it via 'apt'
-- Python : **'python' command should be worked in terminal**
-- Node.js
-- MySQL
+- Docker
 
 ### 1. API keys
 You will need Google OAuth credentials for the login system.
