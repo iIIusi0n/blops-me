@@ -35,6 +35,7 @@ RUN /opt/venv/bin/pip install python-docx
 RUN /opt/venv/bin/pip install python-pptx
 RUN /opt/venv/bin/pip install xlrd
 RUN /opt/venv/bin/pip install openpyxl
+RUN /opt/venv/bin/pip install cryptography
 
 # Install Node.js dependencies
 WORKDIR /app/web
