@@ -36,7 +36,7 @@ export default function FileUpload({storageName}: { storageName: string }) {
     }, []);
 
     const findStorageIdByName = async (storageName: string) => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/storage`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/storage`);
         if (!res.ok) {
             throw new Error('Network response was not ok');
         }
@@ -56,7 +56,7 @@ export default function FileUpload({storageName}: { storageName: string }) {
         try {
             const storageId = await findStorageIdByName(storageName);
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/storage/${storageId}/file`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/storage/${storageId}/file`, {
                 method: 'POST',
                 body: formData,
             });

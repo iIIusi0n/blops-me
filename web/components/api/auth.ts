@@ -8,7 +8,7 @@ export async function getAuthorized() {
         return false;
     }
 
-    const resp = await fetch(`${process.env.APP_API_URL}/auth/verify`, {
+    const resp = await fetch(`${process.env.INTERNAL_API_URL}/auth/verify`, {
         credentials: 'include',
         headers: {
             Cookie: `token=${token}`

@@ -1,0 +1,50 @@
+version: '3'
+services:
+  api:
+    build:
+      dockerfile: containers/api/Dockerfile
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - SERVER_MODE=debug
+      - SERVER_LOG_PATH=server.log
+
+      - OAUTH_CLIENT_ID=client_id
+      - OAUTH_CLIENT_SECRET=client_secert
+      - OAUTH_REDIRECT_URI=https://localhost/auth/google/callback
+
+      - SESSION_SECRET=0123456789abcdef0123456789abcdef
+
+      - GEMINI_API_KEY=api_key
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    build:
+      dockerfile: containers/db/Dockerfile
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 18
+
+  proxy:
+    build:
+      dockerfile: containers/proxy/Dockerfile
+    environment:
+      - DEPLOY_HOST=localhost
+      - API_HOST=api
+      - WEB_HOST=web
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+
+  web:
+    build:
+      dockerfile: containers/web/Dockerfile
+    environment:
+      - INTERNAL_API_URL=http://api:8010
+    depends_on:
+      - api

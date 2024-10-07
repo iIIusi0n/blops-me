@@ -1,5 +1,5 @@
-localhost {
-    reverse_proxy /auth/* 127.0.0.1:8010
-    reverse_proxy /api/* 127.0.0.1:8010
-    reverse_proxy /* 127.0.0.1:3000
+{$DEPLOY_HOST} {
+    reverse_proxy /auth/* {$API_HOST}:8010
+    reverse_proxy /api/* {$API_HOST}:8010
+    reverse_proxy /* {$WEB_HOST}:3000
 }

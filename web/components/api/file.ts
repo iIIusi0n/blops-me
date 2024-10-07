@@ -17,7 +17,7 @@ export async function resolveStorageID(storageName: string): Promise<number> {
 
 export async function getFiles(storageId: number, pathId: number): Promise<File[]> {
     const token = cookies().get('token')?.value;
-    const resp = await fetch(`${process.env.APP_API_URL}/api/storage/${storageId}/file${pathId ? `?path=${pathId}` : ''}`, {
+    const resp = await fetch(`${process.env.INTERNAL_API_URL}/api/storage/${storageId}/file${pathId ? `?path=${pathId}` : ''}`, {
         credentials: 'include',
         headers: {
             'Cookie': `token=${token}`
@@ -32,7 +32,7 @@ export async function getFiles(storageId: number, pathId: number): Promise<File[
 
 export async function getPath(storageId: number, pathId: number): Promise<any> {
     const token = cookies().get('token')?.value;
-    const resp = await fetch(`${process.env.APP_API_URL}/api/storage/${storageId}/path/${pathId}`, {
+    const resp = await fetch(`${process.env.INTERNAL_API_URL}/api/storage/${storageId}/path/${pathId}`, {
         credentials: 'include',
         headers: {
             'Cookie': `token=${token}`
@@ -47,7 +47,7 @@ export async function getPath(storageId: number, pathId: number): Promise<any> {
 
 export async function getParentID(storageId: number, pathId: number): Promise<number> {
     const token = cookies().get('token')?.value;
-    const resp = await fetch(`${process.env.APP_API_URL}/api/storage/${storageId}/parent/${pathId}`, {
+    const resp = await fetch(`${process.env.INTERNAL_API_URL}/api/storage/${storageId}/parent/${pathId}`, {
         credentials: 'include',
         headers: {
             'Cookie': `token=${token}`

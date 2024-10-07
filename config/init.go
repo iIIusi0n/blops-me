@@ -1,26 +1,18 @@
 package config
 
 import (
-	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 func init() {
-	err := godotenv.Load("web/.env.local", "web/.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	DbHost = os.Getenv("MYSQL_HOST")
 	DbPort = os.Getenv("MYSQL_PORT")
-	DbUser = os.Getenv("MYSQL_USER")
-	DbPassword = os.Getenv("MYSQL_PASSWORD")
-	DbName = os.Getenv("MYSQL_DB_NAME")
+	DbUser = "blops_me"
+	DbPassword = "12345678"
+	DbName = "blops_me"
 
-	ServerHost = os.Getenv("SERVER_HOST")
-	ServerPort = os.Getenv("SERVER_PORT")
+	ServerHost = "0.0.0.0"
+	ServerPort = "8010"
 	ReleaseMode = os.Getenv("SERVER_MODE")
 	LogFile = os.Getenv("SERVER_LOG_PATH")
 

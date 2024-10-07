@@ -102,6 +102,6 @@ go.work
 
 *.log
 
-web/.env.local
+*.local.yml
 
 uploads/
