@@ -18,12 +18,7 @@ cd blops-me
 ```
 
 ### 3. Edit configurations
-1) Copy the ./web/.env to ./web/.env.local and edit the file.
-```bash
-cp ./web/.env ./web/.env.local
-```
-
-2) Edit environmental variables in docker-compose.yml.
+1Edit environmental variables in docker-compose.yml.
 ```bash
 vim docker-compose.yml
 ```
