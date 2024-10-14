@@ -18,7 +18,7 @@ cd blops-me
 ```
 
 ### 3. Edit configurations
-1Edit environmental variables in docker-compose.yml.
+1) Edit environmental variables in docker-compose.yml.
 ```bash
 vim docker-compose.yml
 ```
