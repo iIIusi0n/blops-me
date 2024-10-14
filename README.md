@@ -7,9 +7,8 @@ As you use your computer every day, you'll end up with lots of files. But organi
 - Docker
 
 ### 1. API keys
-You will need Google OAuth credentials for the login system.
-
-You will also need a Gemini API key. (Free is ok, it will automatically limit requests to the given limit).
+You need Google OAuth credentials for the login system.
+Also the Gemini API key. (Free is ok, it will automatically limit requests to the given limit).
 
 ### 2. Clone the repo
 ```bash
@@ -18,7 +17,7 @@ cd blops-me
 ```
 
 ### 3. Edit configurations
-1Edit environmental variables in docker-compose.yml.
+1) Edit environmental variables in docker-compose.yml.
 ```bash
 vim docker-compose.yml
 ```
