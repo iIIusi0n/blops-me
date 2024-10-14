@@ -23,6 +23,8 @@ services:
   db:
     build:
       dockerfile: containers/db/Dockerfile
+    volumes:
+      - db_data:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 10s
@@ -50,3 +52,6 @@ services:
       - INTERNAL_API_URL=http://api:8010
     depends_on:
       - api
+
+volumes:
+    db_data: {}
