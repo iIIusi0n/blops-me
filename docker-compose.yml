@@ -46,10 +46,9 @@ services:
   web:
     build:
       dockerfile: containers/web/Dockerfile
-      args:
-        - EXTERNAL_API_URL=https://localhost
     environment:
       - INTERNAL_API_URL=http://api:8010
+      - EXTERNAL_API_URL=https://localhost
     depends_on:
       - api
 
