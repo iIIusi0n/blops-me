@@ -4,10 +4,10 @@ WORKDIR /app
 
 COPY ./web .
 
-ARG NEXT_PUBLIC_API_URL=BAKED_NEXT_PUBLIC_API_URL
-
+RUN cp .env .env.local
 RUN npm install && npm run build
 
 EXPOSE 3000
 
-CMD ["sh", "replace.sh", "&&", "npm", "start"]
+RUN chmod +x entrypoint.sh
+CMD ["sh", "entrypoint.sh"]
